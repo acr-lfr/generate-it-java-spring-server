@@ -1,0 +1,12 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:test
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+acrontum:
+  jwt:
+    secret: samplesecret
+    exp: 900
+app:
+  bmw:
+    endpoint: ${BMW_BASE_URL:https://run.mocky.io/v3/63f4ef75-7e60-4548-88ee-462078a2bc99}

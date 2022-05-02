@@ -1,0 +1,16 @@
+{%-set camel_case_operation = _.camelCase(_.deburr(operation_name)).replace(' ','')-%}
+{%-set pascal_case_operation = ucFirst(camel_case_operation)-%}
+package com.acrontum.template.dtos;
+
+import javax.validation.constraints.NotEmpty;
+import lombok.Data;
+
+/**
+ * The type {{ pascal_case_operation }} dto.
+ */
+@Data
+public class {{ pascal_case_operation }}Dto {
+    private int id;
+    @NotEmpty(message = "name {err.required}")
+    private String name;
+}

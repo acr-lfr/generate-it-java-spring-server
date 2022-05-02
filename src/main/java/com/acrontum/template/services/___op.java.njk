@@ -1,0 +1,70 @@
+{%-set camel_case_operation = _.camelCase(_.deburr(operation_name)).replace(' ','')-%}
+{%-set pascal_case_operation = ucFirst(camel_case_operation)-%}
+package com.acrontum.template.services;
+
+import com.acrontum.spring.lib.AcrontumComponent;
+import com.acrontum.template.models.{{ pascal_case_operation }}Model;
+import com.acrontum.template.repositories.{{ pascal_case_operation }}Repository;
+import java.time.LocalDateTime;
+import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.MessageSource;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
+/**
+ * The type {{ pascal_case_operation }} service.
+ */
+@Service
+@RequiredArgsConstructor
+public class {{ pascal_case_operation }}Service extends AcrontumComponent {
+
+    private final {{ pascal_case_operation }}Repository {{ camel_case_operation }}Repository;
+    private final MessageSource messageSource;
+
+    /**
+     * Find all list.
+     *
+     * @return the list
+     */
+    public List<{{ pascal_case_operation }}Model> findAll() {
+        return {{ camel_case_operation }}Repository.findByDeletedAtIsNull();
+    }
+
+    /**
+     * Gets one {{ camel_case_operation }}.
+     *
+     * @param id the id
+     */
+    public {{ pascal_case_operation }}Model getById(Integer id) {
+        return {{ camel_case_operation }}Repository.findById(id)
+                .filter({{ camel_case_operation }} -> {{ camel_case_operation }}.getDeletedAt() == null)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    }
+
+    /**
+     * Save {{ camel_case_operation }}.
+     *
+     * @param {{ camel_case_operation }}Model the {{ camel_case_operation }}
+     * @return the {{ camel_case_operation }}
+     */
+    public {{ pascal_case_operation }}Model save({{ pascal_case_operation }}Model {{ camel_case_operation }}Model) {
+        return {{ camel_case_operation }}Repository.save({{ camel_case_operation }}Model);
+    }
+
+    /**
+     * Deletes the {{ camel_case_operation }}.
+     *
+     * @param id the id
+     */
+    public void delete(Integer id) {
+        {{ pascal_case_operation }}Model {{ camel_case_operation }} = {{ camel_case_operation }}Repository.findById(id)
+                .map(found{{ pascal_case_operation }} -> {
+                    found{{ pascal_case_operation }}.setDeletedAt(LocalDateTime.now());
+                    return found{{ pascal_case_operation }};
+                }).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        {{ camel_case_operation }}Repository.save({{ camel_case_operation }});
+    }
+
+}
