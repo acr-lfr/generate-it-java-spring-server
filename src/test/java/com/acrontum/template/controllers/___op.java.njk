@@ -1,0 +1,173 @@
+{%-set camel_case_operation = _.camelCase(_.deburr(operation_name)).replace(' ','')-%}
+{%-set pascal_case_operation = ucFirst(camel_case_operation)-%}
+{%-set snake_case_operation = _.snakeCase(camel_case_operation).toUpperCase()-%}
+package com.acrontum.template.controllers;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isA;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import com.acrontum.spring.lib.security.GenericPrincipal;
+import com.acrontum.spring.lib.security.JwtUtils;
+import com.acrontum.template.models.{{ pascal_case_operation }}Model;
+import com.acrontum.template.repositories.{{ pascal_case_operation }}Repository;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Set;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpHeaders;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.web.client.MockRestServiceServer;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.web.client.RestTemplate;
+
+@SpringBootTest
+@AutoConfigureMockMvc
+@Sql(statements = {
+        "delete from {{ snake_case_operation }}S;",
+        "insert into {{ snake_case_operation }}S(name) values('{{ camel_case_operation }}');"
+})
+class {{ pascal_case_operation }}ControllerTest {
+
+    private final ObjectMapper mapper = new ObjectMapper();
+    @Autowired
+    private MockMvc mockMvc;
+    @Autowired
+    private JwtUtils jwtUtils;
+    @Autowired
+    private RestTemplate restTemplate;
+    @Autowired
+    private {{ pascal_case_operation }}Repository {{ camel_case_operation }}Repository;
+
+    private MockRestServiceServer mockServer;
+
+    @BeforeEach
+    public void init() {
+        mockServer = MockRestServiceServer.createServer(restTemplate);
+    }
+
+    @DisplayName("given that local and remote {{ camel_case_operation }}s exist"
+            + " when the client calls GET /{{ camel_case_operation }}s"
+            + " then the all {{ camel_case_operation }}s are returned")
+    @Test
+    void shouldGetAll{{ pascal_case_operation }}sFromEndpoint() throws Exception {
+        // Arrange
+        String jwt = jwtUtils.toJwt(
+                GenericPrincipal.builder().subject("subject").name("John").roles(Set.of("USER")).build());
+
+        // Act / Assert
+        this.mockMvc.perform(get("/{{ camel_case_operation }}s").header("Authorization", "Bearer " + jwt))
+                .andExpectAll(
+                        status().isOk(),
+                        jsonPath("$.length()", is(1)),
+                        jsonPath("$.[0].name", is("{{ camel_case_operation }}"))
+                )
+                .andDo(print())
+                .andReturn();
+    }
+
+    @DisplayName("given that local {{ camel_case_operation }} exists"
+            + " when the client calls DELETE /{{ camel_case_operation }}s/{id}"
+            + " then the {{ camel_case_operation }} is deleted")
+    @Test
+    void shouldDelete{{ pascal_case_operation }}() throws Exception {
+        // Arrange
+        String jwt = jwtUtils.toJwt(
+                GenericPrincipal.builder().subject("QNumber").name("John").roles(Set.of("USER")).build());
+        {{ pascal_case_operation }}Model {{ camel_case_operation }} = {{ camel_case_operation }}Repository.findAll().get(0);
+
+        // Act / Assert
+        this.mockMvc.perform(delete("/{{ camel_case_operation }}s/" + {{ camel_case_operation }}.getId())
+                        .header("Authorization", "Bearer " + jwt))
+                .andExpectAll(
+                        status().isNoContent()
+                )
+                .andDo(print());
+
+        assertThat({{ camel_case_operation }}Repository.findAll()).hasSize(1);
+        assertThat({{ camel_case_operation }}Repository.findByDeletedAtIsNull()).hasSize(0);
+    }
+
+    @DisplayName("given that local doesn't {{ camel_case_operation }} exist"
+            + " when the client calls DELETE /{{ camel_case_operation }}s/{id}"
+            + " then the {{ camel_case_operation }} is deleted")
+    @Test
+    void shouldReturnNotFoundWhen{{ pascal_case_operation }}DoesntExist() throws Exception {
+        // Arrange
+        String jwt = jwtUtils.toJwt(
+                GenericPrincipal.builder().subject("QNumber").name("John").roles(Set.of("USER")).build());
+
+        // Act / Assert
+        this.mockMvc.perform(delete("/{{ camel_case_operation }}s/43")
+                        .header("Authorization", "Bearer " + jwt))
+                .andExpectAll(
+                        status().isNotFound()
+                )
+                .andDo(print());
+    }
+
+    @DisplayName("given that client is authenticated and has authorization"
+            + " when the client calls POST /{{ camel_case_operation }}s with a valid {{ camel_case_operation }}"
+            + " then it creates the {{ camel_case_operation }}")
+    @Test
+    void shouldIncludeAn{{ pascal_case_operation }}() throws Exception {
+        // Arrange
+        String jwt = jwtUtils.toJwt(
+                GenericPrincipal.builder().subject("QNumber").name("John").roles(Set.of("ADMIN")).build());
+        var headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer " + jwt);
+        headers.add("Content-Type", "application/json");
+
+        // Act / Assert
+        MvcResult result = this.mockMvc.perform(
+                        post("/{{ camel_case_operation }}s")
+                                .content("{\"name\": \"first last\"}")
+                                .headers(headers)
+                )
+                .andExpectAll(
+                        status().isCreated(),
+                        jsonPath("$.name", is("first last")),
+                        jsonPath("$.id", isA(Integer.class))
+                )
+                .andReturn();
+
+        assertThat({{ camel_case_operation }}Repository.findAll().size()).isEqualTo(2);
+
+    }
+
+    @DisplayName("given that client is authenticated and has authorization"
+            + " when the client calls POST /{{ camel_case_operation }}s with an invalid {{ camel_case_operation }}"
+            + " then it should return an error message")
+    @Test
+    void shouldValidateAn{{ pascal_case_operation }}WithoutName() throws Exception {
+        // Arrange
+        String jwt = jwtUtils.toJwt(
+                GenericPrincipal.builder().subject("QNumber").name("John").roles(Set.of("ADMIN")).build());
+        var headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer " + jwt);
+        headers.add("Content-Type", "application/json");
+
+        // Act / Assert
+        this.mockMvc.perform(
+                        post("/{{ camel_case_operation }}s")
+                                .content("{\"name\": \"\"}")
+                                .headers(headers)
+                )
+                .andExpectAll(
+                        status().isBadRequest()
+                );
+    }
+
+}
