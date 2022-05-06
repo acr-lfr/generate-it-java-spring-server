@@ -1,0 +1,42 @@
+{%-set camel_case_operation = _.camelCase(_.deburr(operation_name)).replace(' ','')-%}
+{%-set pascal_case_operation = ucFirst(camel_case_operation)-%}
+{%-set responseInterfaces = findAllJavaTypesForResponses(operations)-%}
+{%-set requestInterfaces = findAllJavaTypesForBodies(operations)-%}
+package com.acrontum.template.mappers;
+
+import com.acrontum.template.models.{{ pascal_case_operation }};
+import java.util.List;
+import org.mapstruct.Mapper;
+import org.mapstruct.ReportingPolicy;
+
+/**
+ * The interface {{ pascal_case_operation }} mapper.
+ */
+@Mapper(
+        componentModel = "spring",
+        unmappedTargetPolicy = ReportingPolicy.IGNORE
+)
+public interface {{ pascal_case_operation }}Mapper {
+    {%- for interface in responseInterfaces  %}
+    /**
+     * To dto {{ camel_case_operation }} dto.
+     *
+     * @param {{ camel_case_operation }} the {{ camel_case_operation }}
+     * @return the {{ interface }} dto
+     */
+    {{ toDto(interface) }} to{{ interface }}Dto({{ pascal_case_operation }} {{ camel_case_operation }});
+
+    {% endfor %}
+
+    {%- for interface in requestInterfaces %}
+    /**
+     * To entity {{ camel_case_operation }}.
+     *
+     * @param dto the {{ interface }} dto
+     * @return the {{ camel_case_operation }}
+     */
+    {{ pascal_case_operation }} toEntity({{ toDto(interface) }} dto);
+
+    {% endfor %}
+
+}
