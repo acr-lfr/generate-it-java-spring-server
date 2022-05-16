@@ -1,0 +1,18 @@
+{
+  "name": "generate-it-helpers",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "generate-it": "node -r ./ignore-tpl-tag.js node_modules/.bin/generate-it",
+    "gen": "npm run generate-it -- -y -m -t https://github.com/acr-lfr/generate-it-java-spring-server#feature/ACRDDF-73-java-spring-server-template api.yml",
+    "prebuild": "rm -rf helpers",
+    "build": "tsc"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "generate-it": "^5.39.0",
+    "typescript": "^4.6.4"
+  }
+}
