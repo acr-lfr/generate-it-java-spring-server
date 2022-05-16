@@ -29,10 +29,10 @@ The main components of the architecture are:
 ## Building the project
 
 To build the project you should run:
-> ./gradlew clean build
+> gradlew clean build
 
 or the command below if you don't want to run the tests
-> ./gradlew assemble 
+> gradlew assemble 
 
 ## Running it with Docker
 
@@ -51,19 +51,20 @@ After that you can include the break points in your code.
 ## Testing
 
 You can run all tests by:
-> ./gradlew test
+> gradlew test
 
 We can write two types of tests: Unit tests and Integration tests
 
 ### Unit tests
 
 The units tests are written using JUnit5, Mockito and you can use either hamcrest or assertj to make your assertions.
-Check [this folder](src/test/java/com/acrontum/template/services) to see examples of unit testing.
+Click [here](src/test/java/com/acrontum/template/services/UserServiceTest.java) to see one example of unit testing.
 
 ### Integration tests
 
 The integration tests use spring framework to run.  
-Check [this folder](src/test/java/com/acrontum/template/controllers) to see examples of integration tests.
+Click [here](src/test/java/com/acrontum/template/controllers/UserControllerTest.java) to see one example of unit
+testing.
 
 #### Using Postgres on Integration tests
 
@@ -84,13 +85,6 @@ annotations to control the authorization.
 You can use this JWT to run your local tests, provided that you don't change the JWT secret:
 > curl --location --request GET 'http://localhost:8080/users'
 > --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdWIiLCJyb2xlcyI6IkFETUlOIiwibmFtZSI6IlVzZXJuYW1lIiwiaWF0IjoxNjQ5ODQzMDgxfQ._n921EYQ6TBlKamQXC61bwgGMtHzzLRgG3pv_SVIwcQ'
-
-## Sonar
-To run the sonar task you should pass the host and credentials as seen below:
-
-> ./gradlew clean test sonarqube \
--Dsonar.host.url=http://localhost:9000 \
--Dsonar.login=admin -Dsonar.password=password
 
 ## Reference Documentation
 

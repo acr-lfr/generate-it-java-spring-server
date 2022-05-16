@@ -1,6 +1,5 @@
 {%-set camel_case_operation = _.camelCase(_.deburr(operation_name)).replace(' ','')-%}
 {%-set pascal_case_operation = ucFirst(camel_case_operation)-%}
-{%-set snake_case_operation = _.snakeCase(camel_case_operation).toUpperCase() -%}
 package com.acrontum.template.models;
 
 import java.time.LocalDateTime;
@@ -17,12 +16,12 @@ import lombok.NoArgsConstructor;
 /**
  * The type {{ pascal_case_operation }}.
  */
-@Entity(name = "{{ snake_case_operation }}S")
+@Entity(name = "{{ camel_case_operation }}s")
 @Data
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class {{ pascal_case_operation }} {
+public class {{ pascal_case_operation }}Model {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")

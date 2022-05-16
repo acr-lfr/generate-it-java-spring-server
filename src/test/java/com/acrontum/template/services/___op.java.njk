@@ -3,15 +3,23 @@
 package com.acrontum.template.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-import com.acrontum.template.models.{{ pascal_case_operation }};
+import com.acrontum.spring.lib.security.GenericPrincipal;
+import com.acrontum.template.models.{{ pascal_case_operation }}Model;
 import com.acrontum.template.repositories.{{ pascal_case_operation }}Repository;
+import java.time.LocalDateTime;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 @ExtendWith(MockitoExtension.class)
 class {{ pascal_case_operation }}ServiceTest {
@@ -20,23 +28,39 @@ class {{ pascal_case_operation }}ServiceTest {
     {{ pascal_case_operation }}Repository repository;
     @InjectMocks
     {{ pascal_case_operation }}Service underTest;
-{% for op in operations -%}
-    {%- for method, path in op.path -%}
-        {%- if isValidMethod(method) %}
-            {%-set javaMethodName = path.operationId or (method + pascal_case_operation)%}
-            {%-set input = _.sortBy(path.parameters, ['in']) %}
+
     @Test
-    void shouldTest{{ ucFirst(javaMethodName) }}() {
+    void shouldFindAllLocalAndRemote{{ pascal_case_operation }}s() {
         // Arrange
-        {{ pascal_case_operation }} {{ camel_case_operation }} = {{ pascal_case_operation }}.builder().name("name").build();
+        {{ pascal_case_operation }}Model local{{ pascal_case_operation }} = {{ pascal_case_operation }}Model.builder().name("name").build();
+        when(repository.findByDeletedAtIsNull()).thenReturn(List.of(local{{ pascal_case_operation }}));
 
         // Act
-        {{ pascal_case_operation }} returned{{ pascal_case_operation }} = underTest.{{ javaMethodName }}({%- for param in input %}null{{ ', ' if not loop.last }}{%- endfor -%});
+        List<{{ pascal_case_operation }}Model> all{{ pascal_case_operation }}s = underTest.findAll();
 
         // Assert
-        assertThat(returned{{ pascal_case_operation }}).isNotNull();
+        assertThat(all{{ pascal_case_operation }}s)
+                .hasSize(1)
+                .extracting({{ pascal_case_operation }}Model::getName)
+                .containsExactly("name");
     }
-        {% endif %}
-    {%- endfor %}
-{%- endfor %}
+
+    @Test
+    void shouldAdd{{ pascal_case_operation }}WithRightData() {
+        // Arrange
+        LocalDateTime predictedCreatedBy = LocalDateTime.now();
+        {{ pascal_case_operation }}Model {{ camel_case_operation }}ToAdd = {{ pascal_case_operation }}Model.builder().name("new {{ camel_case_operation }}").build();
+        when(repository.save(any({{ pascal_case_operation }}Model.class))).thenAnswer(i -> {
+            var u = ({{ pascal_case_operation }}Model) i.getArgument(0);
+            return u.toBuilder().id(42).build();
+        });
+
+        // Act
+        var created{{ pascal_case_operation }} = underTest.save({{ camel_case_operation }}ToAdd);
+
+        // Assert
+        assertThat(created{{ pascal_case_operation }})
+                .extracting("id", "name")
+                .containsExactly(42, created{{ pascal_case_operation }}.getName());
+    }
 }
