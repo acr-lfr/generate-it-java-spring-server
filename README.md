@@ -83,7 +83,7 @@ annotations to control the authorization.
 
 You can use this JWT to run your local tests, provided that you don't change the JWT secret:
 > curl --location --request GET 'http://localhost:8080/users'
-> --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdWIiLCJyb2xlcyI6IkFETUlOIiwibmFtZSI6IlVzZXJuYW1lIiwiaWF0IjoxNjQ5ODQzMDgxfQ._n921EYQ6TBlKamQXC61bwgGMtHzzLRgG3pv_SVIwcQ'
+> --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdWIiLCJyb2xlcyI6IkFETUlOIiwibmFtZSI6IlVzZXJuYW1lIiwiaWF0IjoxNjQ5ODQzMDgxfQ.\_n921EYQ6TBlKamQXC61bwgGMtHzzLRgG3pv_SVIwcQ'
 
 ## Sonar
 To run the sonar task you should pass the host and credentials as seen below:
@@ -97,3 +97,7 @@ To run the sonar task you should pass the host and credentials as seen below:
 For further reference, please consider the following sections:
 
 * [Testcontainers](https://www.testcontainers.org/)
+
+## Code Generation 
+
+See [nodegen folder](./.openapi-nodegen/README.md)
