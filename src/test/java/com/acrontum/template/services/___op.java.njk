@@ -1,0 +1,42 @@
+{%-set camel_case_operation = _.camelCase(_.deburr(operation_name)).replace(' ','')-%}
+{%-set pascal_case_operation = ucFirst(camel_case_operation)-%}
+package com.acrontum.template.services;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.*;
+
+import com.acrontum.template.models.{{ pascal_case_operation }};
+import com.acrontum.template.repositories.{{ pascal_case_operation }}Repository;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+@ExtendWith(MockitoExtension.class)
+class {{ pascal_case_operation }}ServiceTest {
+
+    @Mock
+    {{ pascal_case_operation }}Repository repository;
+    @InjectMocks
+    {{ pascal_case_operation }}Service underTest;
+{% for op in operations -%}
+    {%- for method, path in op.path -%}
+        {%- if isValidMethod(method) %}
+            {%-set javaMethodName = path.operationId or (method + pascal_case_operation)%}
+            {%-set input = _.sortBy(path.parameters, ['in']) %}
+    @Test
+    void shouldTest{{ ucFirst(javaMethodName) }}() {
+        // Arrange
+        {{ pascal_case_operation }} {{ camel_case_operation }} = {{ pascal_case_operation }}.builder().name("name").build();
+
+        // Act
+        {{ pascal_case_operation }} returned{{ pascal_case_operation }} = underTest.{{ javaMethodName }}({%- for param in input %}null{{ ', ' if not loop.last }}{%- endfor -%});
+
+        // Assert
+        assertThat(returned{{ pascal_case_operation }}).isNotNull();
+    }
+        {% endif %}
+    {%- endfor %}
+{%- endfor %}
+}
